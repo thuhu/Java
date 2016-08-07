@@ -4,7 +4,7 @@ Pseudo random number generator using wichmann hill algorithm.
 import math
 
 """
-Global random seeds
+normal distribution
 """
 class prng:
     def __init__(self, inti_x=1, inti_y=1, inti_z=1):
@@ -31,7 +31,52 @@ class prng:
         tmp -= math.trunc(tmp)
         return tmp
 
-my_prng = prng(120, 38, 54)
+
+
+"""
+Using the abobe Uniform distribution random number generator to provide gausian
+distribution number generator.
+"""
+
+
+class gaussian_prng:
+    def __init__(self, mean, std_dev):
+        self.mean = mean
+        self.std_dev = std_dev
+        self.norm_prng = prng(120, 38, 74)
+        self.spare = 0
+        self.is_spare_ready = False
+
+    def random(self):
+        mul = 0
+        if self.is_spare_ready :
+            self.is_spare_ready = False
+            return self.spare * self.std_dev + self.mean
+
+        u = 0
+        v = 0
+        s = 0
+
+        while True:
+            u = self.norm_prng.random() * 2 - 1
+            v = self.norm_prng.random() * 2 - 1
+            s = u * u + v * v
+            if s >= 1 or s is 0:
+                break
+        comp = math.sqrt(2.0 )#* math.log(s) / s)
+        self.spare = v * mul
+        self.is_spare_ready = True
+        return self.mean + self.std_dev * u * mul
+
+
+"""
+my_prng = prng(120, 38, 74)
 
 for i in range(5):
     print my_prng.random()
+"""
+
+my_gauss = gaussian_prng(4, 2)
+for i in range(10):
+	print my_gauss.random()
+
